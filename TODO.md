@@ -26,22 +26,22 @@
 ---
 
 ## 📌 Phase 2. 크로스 플랫폼 Wi-Fi & 네트워크 수집기 (Collector)
-- [ ] OS 추상화 수집기 베이스 인터페이스 구현 (`BaseCollector`)
-- [ ] **Windows 수집기 구현 (`WindowsCollector`)**
-  - [ ] `netsh wlan show interfaces` 파싱 (SSID, BSSID, RSSI, 채널, 대역, 링크 속도)
-  - [ ] `netsh wlan show networks mode=bssid` 파싱 (주변 AP 및 채널 혼잡도)
-  - [ ] 기본 게이트웨이 및 DNS 주소 조회 (`ipconfig` / `psutil`)
-  - [ ] 유선 이더넷(LAN) 어댑터 상태 조회
-- [ ] **Linux 수집기 구현 (`LinuxCollector`)**
-  - [ ] `nmcli` 또는 `iw`/`wpa_supplicant` 기반 Wi-Fi 상태 파싱
-  - [ ] 주변 Wi-Fi 스캔 및 채널 혼잡도 수집
-  - [ ] 라우팅 테이블 파싱 (`ip route` 기반 게이트웨이 조회)
-  - [ ] 유선 네트워크 인터페이스 상태 확인
-- [ ] 네트워크 핑 & 연결성 프로브 구현 (`src/collectors/probe.py`)
-  - [ ] 기본 게이트웨이(공유기 IP) Ping RTT 및 패킷 손실률 측정
-  - [ ] 외부 인터넷(8.8.8.8, 1.1.1.1) Ping 측정
-  - [ ] DNS 질의 응답 테스트
-  - [ ] L7 HTTPS 웹 연결 테스트 (캡티브 포털 및 실제 웹 통신 검증)
+- [x] OS 추상화 수집기 베이스 인터페이스 구현 (`BaseCollector`)
+- [x] **Windows 수집기 구현 (`WindowsCollector`)**
+  - [x] `netsh wlan show interfaces` 파싱 (SSID, BSSID, RSSI, 채널, 대역, 링크 속도)
+  - [x] `netsh wlan show networks mode=bssid` 파싱 (주변 AP 및 채널 혼잡도)
+  - [x] 기본 게이트웨이 및 DNS 주소 조회 (`ipconfig` / `psutil`)
+  - [x] 유선 이더넷(LAN) 어댑터 상태 조회
+- [x] **Linux 수집기 구현 (`LinuxCollector`)**
+  - [x] `nmcli` 또는 `iw`/`wpa_supplicant` 기반 Wi-Fi 상태 파싱
+  - [x] 주변 Wi-Fi 스캔 및 채널 혼잡도 수집
+  - [x] 라우팅 테이블 파싱 (`ip route` 기반 게이트웨이 조회)
+  - [x] 유선 네트워크 인터페이스 상태 확인
+- [x] 네트워크 핑 & 연결성 프로브 구현 (`src/collectors/probe.py`)
+  - [x] 기본 게이트웨이(공유기 IP) Ping RTT 및 패킷 손실률 측정
+  - [x] 외부 인터넷(8.8.8.8, 1.1.1.1) Ping 측정
+  - [x] DNS 질의 응답 테스트
+  - [x] L7 HTTPS 웹 연결 테스트 (캡티브 포털 및 실제 웹 통신 검증)
 
 ---
 
