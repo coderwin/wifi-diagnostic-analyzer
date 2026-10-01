@@ -14,14 +14,14 @@
 ---
 
 ## 📌 Phase 1. 프로젝트 기반 및 환경 구성
-- [ ] 프로젝트 디렉터리 아키텍처 수립 (`src/`, `templates/`, `tests/`, `reports/`)
-- [ ] 의존성 명세서 작성 (`requirements.txt` / `pyproject.toml`)
-  - [ ] Core: `psutil`, `ping3`, `dnspython`, `requests`, `pydantic`
-  - [ ] Schedule & CLI: `apscheduler`, `typer`, `rich`
-  - [ ] Storage: `sqlalchemy`, `aiosqlite`
-  - [ ] Report & Chart: `jinja2`, `weasyprint`, `matplotlib`, `seaborn`
-- [ ] 공통 데이터 모델 및 타입 정의 (`src/models/metrics.py`, `src/models/incident.py`)
-- [ ] 로깅 및 환경 설정 모듈 구현 (`src/config.py`, `src/utils/logger.py`)
+- [x] 프로젝트 디렉터리 아키텍처 수립 (`src/`, `templates/`, `tests/`, `reports/`)
+- [x] 의존성 명세서 작성 (`requirements.txt` / `pyproject.toml`)
+  - [x] Core: `psutil`, `ping3`, `dnspython`, `requests`, `pydantic`
+  - [x] Schedule & CLI: `apscheduler`, `typer`, `rich`
+  - [x] Storage: `sqlalchemy`, `aiosqlite`
+  - [x] Report & Chart: `jinja2`, `weasyprint`, `matplotlib`, `seaborn`
+- [x] 공통 데이터 모델 및 타입 정의 (`src/models/metrics.py`, `src/models/incident.py`)
+- [x] 로깅 및 환경 설정 모듈 구현 (`src/config.py`, `src/utils/logger.py`)
 
 ---
 
