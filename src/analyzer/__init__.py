@@ -1,5 +1,6 @@
 from .detector import IncidentDetector
 from .engine import MonitoringEngine
+from .pattern import IncidentPatternAnalyzer, RecurringPatternInsight
 from .rules import DiagnosticEvaluation, RuleMatrixEngine
 
 __all__ = [
@@ -7,4 +8,6 @@ __all__ = [
     "DiagnosticEvaluation",
     "IncidentDetector",
     "MonitoringEngine",
+    "IncidentPatternAnalyzer",
+    "RecurringPatternInsight",
 ]

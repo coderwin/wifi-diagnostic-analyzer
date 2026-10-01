@@ -61,14 +61,14 @@
 ---
 
 ## 📌 Phase 4. 데이터 저장소 및 시계열 패턴 분석 (Storage & Pattern Detection)
-- [ ] SQLite 데이터베이스 스키마 및 마이그레이션 (`src/storage/db.py`)
-  - [ ] 시계열 메트릭 테이블 (`metrics_log`)
-  - [ ] 장애 이벤트 및 분석 결과 테이블 (`incidents`)
-- [ ] 오래된 메트릭 자동 정리(Retention) 정책 적용
-- [ ] **반복 패턴 탐지 알고리즘 구현 (`src/analyzer/pattern.py`)**
-  - [ ] 일별/시간대별 장애 발생 빈도 군집화 (Clustering)
-  - [ ] "매일 특정 시간대(예: 오전 9시경) 반복 발생" 신뢰도/주기성 점수 산출
-  - [ ] 연속 N일 중 M일 발생 여부 판별 로직
+- [x] SQLite 데이터베이스 스키마 및 마이그레이션 (`src/storage/db.py`)
+  - [x] 시계열 메트릭 테이블 (`metrics_log`)
+  - [x] 장애 이벤트 및 분석 결과 테이블 (`incidents`)
+- [x] 오래된 메트릭 자동 정리(Retention) 정책 적용
+- [x] **반복 패턴 탐지 알고리즘 구현 (`src/analyzer/pattern.py`)**
+  - [x] 일별/시간대별 장애 발생 빈도 군집화 (Clustering)
+  - [x] "매일 특정 시간대(예: 오전 9시경) 반복 발생" 신뢰도/주기성 점수 산출
+  - [x] 연속 N일 중 M일 발생 여부 판별 로직
 
 ---
 
