@@ -3,6 +3,42 @@
 
 ---
 
+## 🚀 빠른 시작 가이드 (Quick Start)
+
+### 1. 가상환경 활성화 및 의존성 설치
+```powershell
+# Windows
+.venv\Scripts\activate
+pip install -r requirements.txt
+
+# Linux
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. 주요 CLI 명령어 사용법
+```bash
+# 1) 현재 Wi-Fi 및 네트워크 상태 즉시 1회 정밀 진단
+python src/main.py diagnose
+
+# 2) 상시 백그라운드 모니터링 데몬 실행 (평상시 5초 / 장애 시 1초 고해상도 폴링)
+python src/main.py monitor
+
+# 3) 최근 5일 중 4일 오전 09:00 AP 크래시 가상 시나리오 데이터 주입 (테스트용)
+python src/main.py simulate --days 5 --crash-days 4
+
+# 4) 최근 발생한 장애 이력 및 상태 확인
+python src/main.py status
+
+# 5) 일별 진단 리포트 생성 (PDF / HTML)
+python src/main.py report --daily --date 2026-09-30
+
+# 6) 최근 기간별(7일/30일) 주기성/반복 패턴 심층 분석 리포트 생성
+python src/main.py report --pattern --days 7
+```
+
+---
+
 ## 1. 프로젝트 개요 및 기획 배경
 
 ### 1.1 실제 장애 상황 시나리오
