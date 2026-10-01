@@ -86,14 +86,14 @@
 ---
 
 ## 📌 Phase 6. CLI 인터페이스 및 데몬/서비스 러너
-- [ ] Typer 기반 CLI 명령어 구축 (`src/main.py`)
-  - [ ] `wifi-analyzer monitor`: 백그라운드 상시 모니터링 실행
-  - [ ] `wifi-analyzer diagnose`: 현재 네트워크 즉각 정밀 진단 1회 실행
-  - [ ] `wifi-analyzer report --daily [YYYY-MM-DD]`: 일별 리포트 PDF 생성
-  - [ ] `wifi-analyzer report --pattern [--days 7|30]`: 기간별 패턴 분석 리포트 PDF 생성
-  - [ ] `wifi-analyzer status`: 최근 발생 장애 및 가동률 상태 출력
-- [ ] Windows 작업 스케줄러 / 백그라운드 서비스 등록 스크립트 작성
-- [ ] Linux systemd 서비스 유닛 파일 작성
+- [x] Typer 기반 CLI 명령어 구축 (`src/main.py`)
+  - [x] `wifi-sentinel monitor`: 백그라운드 상시 모니터링 실행
+  - [x] `wifi-sentinel diagnose`: 현재 네트워크 즉각 정밀 진단 1회 실행
+  - [x] `wifi-sentinel report --daily [YYYY-MM-DD]`: 일별 리포트 PDF 생성
+  - [x] `wifi-sentinel report --pattern [--days 7|30]`: 기간별 패턴 분석 리포트 PDF 생성
+  - [x] `wifi-sentinel status`: 최근 발생 장애 및 가동률 상태 출력
+- [x] Windows 작업 스케줄러 / 백그라운드 서비스 등록 스크립트 작성
+- [x] Linux systemd 서비스 유닛 파일 작성
 
 ---
 

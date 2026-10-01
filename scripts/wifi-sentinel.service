@@ -1,0 +1,17 @@
+[Unit]
+Description=Wi-Fi Sentinel Diagnostic & Incident Analyzer Daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/wifi-sentinel
+ExecStart=/opt/wifi-sentinel/.venv/bin/python src/main.py monitor
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
