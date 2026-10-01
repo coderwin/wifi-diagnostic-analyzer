@@ -4,6 +4,15 @@
 
 ---
 
+## ⚙️ 작업 진행 규칙 (Rules)
+- [ ] **Rule 0:** 작업 전, GitHub에 이슈를 발행한다.
+- [ ] **Rule 1:** 새로운 작업을 할 때마다 브랜치를 생성한다. (`feature/#이슈번호-기능명`)
+- [ ] **Rule 2:** 작업이 완료되면 commit 후 PR을 생성한다.
+- [ ] **Rule 3:** PR을 merge 하기 전, 사용자 승인을 받는다.
+- [ ] **Rule 4:** PR을 merge하면 관련 issue를 닫는다.
+
+---
+
 ## 📌 Phase 1. 프로젝트 기반 및 환경 구성
 - [ ] 프로젝트 디렉터리 아키텍처 수립 (`src/`, `templates/`, `tests/`, `reports/`)
 - [ ] 의존성 명세서 작성 (`requirements.txt` / `pyproject.toml`)
