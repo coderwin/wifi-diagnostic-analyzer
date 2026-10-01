@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Wi-Fi 장애 진단 일일 리포트</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 15mm 18mm 15mm;
+            @bottom-right {
+                content: "페이지 " counter(page) " / " counter(pages);
+                font-size: 8pt;
+                color: #64748b;
+            }
+        }
+        body {
+            font-family: "Malgun Gothic", "NanumGothic", "Apple SD Gothic Neo", sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            font-size: 10pt;
+        }
+        .header {
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin: 0;
+        }
+        .subtitle {
+            font-size: 9pt;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+        .summary-card .value {
+            font-size: 15pt;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .summary-card .label {
+            font-size: 8pt;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 8pt;
+            font-weight: bold;
+        }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        
+        .section-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #1e293b;
+            border-left: 4px solid #2563eb;
+            padding-left: 8px;
+            margin: 20px 0 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 8.5pt;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 7px 9px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+            color: #334155;
+        }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .chart-box {
+            text-align: center;
+            margin: 15px 0;
+            break-inside: avoid;
+        }
+        .chart-box img {
+            width: 100%;
+            max-height: 240px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .recommendation-box {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            break-inside: avoid;
+        }
+        .recommendation-box h4 {
+            margin: 0 0 6px 0;
+            color: #1e40af;
+            font-size: 9.5pt;
+        }
+        .recommendation-box ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="title">Wi-Fi 장애 진단 일일 리포트</div>
+            <div class="subtitle">네트워크 연결성 감시 및 근본 원인 분석 보고서</div>
+        </div>
+        <div style="text-align: right; font-size: 8.5pt; color: #64748b;">
+            발행일시: {{ report_date }}<br>
+            대상 OS: {{ os_type }}
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="value" style="color: {{ '#16a34a' if uptime_pct >= 99.0 else '#dc2626' }}">{{ uptime_pct }}%</div>
+            <div class="label">네트워크 가동률</div>
+        </div>
+        <div class="summary-card">
+            <div class="value">{{ total_incidents }}건</div>
+            <div class="label">발생 장애 건수</div>
+        </div>
+        <div class="summary-card">
+            <div class="value">{{ total_downtime_str }}</div>
+            <div class="label">총 단절 시간</div>
+        </div>
+        <div class="summary-card">
+            <div class="value" style="font-size: 11pt; padding-top: 5px;">{{ primary_issue }}</div>
+            <div class="label">주요 장애 원인</div>
+        </div>
+    </div>
+
+    {% if latency_chart %}
+    <div class="chart-box">
+        <img src="{{ latency_chart }}" alt="Latency Chart">
+    </div>
+    {% endif %}
+
+    {% if rssi_chart %}
+    <div class="chart-box">
+        <img src="{{ rssi_chart }}" alt="RSSI Chart">
+    </div>
+    {% endif %}
+
+    <div class="section-title">장애 상세 이력 및 원인 분석</div>
+    {% if incidents %}
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 15%;">발생 시각</th>
+                <th style="width: 12%;">지속 시간</th>
+                <th style="width: 25%;">추정 원인</th>
+                <th style="width: 10%;">신뢰도</th>
+                <th style="width: 38%;">주요 근거 및 세부 내역</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inc in incidents %}
+            <tr>
+                <td>{{ inc.start_time.strftime('%H:%M:%S') }}</td>
+                <td>{{ inc.duration_seconds or 0 }}초</td>
+                <td><span class="badge badge-danger">{{ inc.root_cause.value }}</span></td>
+                <td>{{ (inc.confidence_score * 100)|int }}%</td>
+                <td>
+                    <strong>{{ inc.summary }}</strong><br>
+                    {% for ev in inc.evidence %}
+                    <span style="font-size: 7.5pt; color: #64748b;">• {{ ev }}</span><br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #64748b; font-size: 9pt;">해당 일자에 감지된 네트워크 장애가 없습니다. (100% 정상 작동)</p>
+    {% endif %}
+
+    {% if recommendations %}
+    <div class="recommendation-box">
+        <h4>🛠 권장 조치 가이드</h4>
+        <ul>
+            {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</body>
+</html>

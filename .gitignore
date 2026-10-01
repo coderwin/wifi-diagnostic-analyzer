@@ -41,6 +41,7 @@ venv.bak/
 # Logs and generated reports
 *.log
 reports/*.pdf
+reports/*.html
 output/
 
 # IDE / Editor

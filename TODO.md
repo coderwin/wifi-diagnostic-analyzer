@@ -73,17 +73,15 @@
 ---
 
 ## 📌 Phase 5. 차트 시각화 및 PDF 리포트 생성기 (Reporting & PDF)
-- [ ] **데이터 시각화 모듈 (`src/reporter/charts.py`)**
-  - [ ] 시간대별 Ping 지연시간 & 패킷 손실률 꺾은선 차트
-  - [ ] Wi-Fi 신호 세기(RSSI) 변동 추이 차트
-  - [ ] 24시간 x 7일 요일/시간대별 장애 히트맵 (Heatmap)
-  - [ ] 주변 Wi-Fi 채널 점유 다이어그램
-- [ ] **Jinja2 HTML/CSS 템플릿 설계 (`templates/`)**
-  - [ ] 일별 장애 요약 보고서 템플릿 (`daily_report.html`)
-  - [ ] 주기성/패턴 심층 분석 보고서 템플릿 (`pattern_report.html`)
-  - [ ] 통신사/공유기 제조사 제출용 장애 입증서 템플릿 (`vendor_proof.html`)
-  - [ ] 인쇄 표준 규격 스타일시트 (A4, 페이지 넘김 방지, 한글 폰트 임베딩)
-- [ ] WeasyPrint 기반 HTML -> 고품질 PDF 변환 파이프라인 구현 (`src/reporter/pdf_generator.py`)
+- [x] **데이터 시각화 모듈 (`src/reporter/charts.py`)**
+  - [x] 시간대별 Ping 지연시간 & 패킷 손실률 꺾은선 차트
+  - [x] Wi-Fi 신호 세기(RSSI) 변동 추이 차트
+  - [x] 24시간 x 7일 요일/시간대별 장애 히트맵 (Heatmap)
+- [x] **Jinja2 HTML/CSS 템플릿 설계 (`templates/`)**
+  - [x] 일별 장애 요약 보고서 템플릿 (`daily_report.html`)
+  - [x] 주기성/패턴 심층 분석 보고서 템플릿 (`pattern_report.html`)
+  - [x] 인쇄 표준 규격 스타일시트 (A4, 페이지 넘김 방지, 한글 폰트 임베딩)
+- [x] WeasyPrint 기반 HTML -> 고품질 PDF 변환 파이프라인 구현 (`src/reporter/pdf_generator.py`)
 
 ---
 
