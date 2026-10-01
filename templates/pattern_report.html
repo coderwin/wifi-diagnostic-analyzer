@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Wi-Fi 장애 주기성 및 반복 패턴 분석서</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 15mm 18mm 15mm;
+            @bottom-right {
+                content: "페이지 " counter(page) " / " counter(pages);
+                font-size: 8pt;
+                color: #64748b;
+            }
+        }
+        body {
+            font-family: "Malgun Gothic", "NanumGothic", "Apple SD Gothic Neo", sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            font-size: 10pt;
+        }
+        .header {
+            border-bottom: 2px solid #7c3aed;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #5b21b6;
+            margin: 0;
+        }
+        .subtitle {
+            font-size: 9pt;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .alert-card {
+            background-color: #faf5ff;
+            border-left: 5px solid #8b5cf6;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .alert-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 11pt;
+            color: #6d28d9;
+        }
+        .section-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #1e293b;
+            border-left: 4px solid #7c3aed;
+            padding-left: 8px;
+            margin: 20px 0 10px 0;
+        }
+        .chart-box {
+            text-align: center;
+            margin: 15px 0;
+            break-inside: avoid;
+        }
+        .chart-box img {
+            width: 100%;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 8.5pt;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 7px 9px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+        }
+        .recommendation-box {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            break-inside: avoid;
+        }
+        .recommendation-box h4 {
+            margin: 0 0 6px 0;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="title">Wi-Fi 장애 주기성 및 패턴 분석 리포트</div>
+            <div class="subtitle">시계열 통계 기반 특정 시간대 반복 장애 규명 보고서</div>
+        </div>
+        <div style="text-align: right; font-size: 8.5pt; color: #64748b;">
+            분석 기간: {{ period_str }} ({{ total_days }}일간)<br>
+            발행일시: {{ report_date }}
+        </div>
+    </div>
+
+    <div class="alert-card">
+        <h3>🔍 패턴 탐지 분석 결론</h3>
+        <p style="margin: 0; font-size: 9.5pt; line-height: 1.6;">
+            <strong>{{ pattern_insight.pattern_summary }}</strong>
+        </p>
+    </div>
+
+    {% if heatmap_chart %}
+    <div class="chart-box">
+        <img src="{{ heatmap_chart }}" alt="Hourly Heatmap">
+    </div>
+    {% endif %}
+
+    <div class="section-title">시간대별 집중 발생 내역 (주요 장애)</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 18%;">일시</th>
+                <th style="width: 12%;">단절 시간</th>
+                <th style="width: 25%;">원인</th>
+                <th style="width: 45%;">발생 정황 및 분석</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inc in pattern_incidents %}
+            <tr>
+                <td>{{ inc.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ inc.duration_seconds or 0 }}초</td>
+                <td><strong style="color: #b91c1c;">{{ inc.root_cause.value }}</strong></td>
+                <td>
+                    {{ inc.summary }}<br>
+                    {% for ev in inc.evidence %}
+                    <span style="font-size: 7.5pt; color: #64748b;">- {{ ev }}</span><br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="recommendation-box">
+        <h4>🎯 공유기 제조사 및 네트워크 담당자 조치 권고안</h4>
+        <p style="margin: 0 0 6px 0; font-size: 9pt;">{{ pattern_insight.recommendation }}</p>
+        <ul style="margin: 0; padding-left: 18px; font-size: 8.5pt;">
+            <li>공유기 관리자(Web GUI) 접속 후 [고급 설정] &gt; [시스템 관리] &gt; [예약 재부팅] 설정 시간 점검</li>
+            <li>[무선 설정] &gt; [무선 스케줄러] 또는 [Wi-Fi 절전 모드] 가동 여부 점검</li>
+            <li>특정 시각에 일제히 끊어지는 현상은 공유기 내부 메모리 누수 또는 펌웨어 데몬 재시작 버그일 가능성이 매우 높으므로 공식 최신 펌웨어 적용 필수</li>
+        </ul>
+    </div>
+</body>
+</html>
