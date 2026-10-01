@@ -19,8 +19,10 @@ from src.analyzer.pattern import IncidentPatternAnalyzer
 from src.analyzer.rules import RuleMatrixEngine
 from src.collectors.factory import get_collector
 from src.config import settings
+from src.models.incident import RootCauseType
 from src.models.metrics import NetworkHealthStatus
 from src.reporter.pdf_generator import PdfReportGenerator
+from src.simulator import generate_simulated_dataset
 from src.storage.db import DatabaseStorage
 from src.utils.logger import logger
 
@@ -177,6 +179,30 @@ def report(
         with console.status(f"[bold green]최근 {days}일간 주기성/반복 패턴 분석 리포트 생성 중..."):
             out_file = generator.generate_pattern_report(days=days)
         console.print(f"[bold green]OK 패턴 분석 리포트 생성 완료:[/bold green] [underline]{out_file}[/underline]")
+
+
+@app.command()
+def simulate(
+    days: int = typer.Option(5, "--days", "-d", help="시뮬레이션 일수 (기본값: 5)"),
+    crash_days: int = typer.Option(4, "--crash-days", "-c", help="장애 발생 일수 (기본값: 4)"),
+):
+    """'매일 오전 09:00 공유기 무선 AP 크래시' 가상 시나리오 데이터를 DB에 주입합니다."""
+    settings.ensure_directories()
+    storage = DatabaseStorage()
+
+    with console.status(f"[bold green]{days}일 중 {crash_days}일간 09:00 장애 데이터 생성 중..."):
+        incidents = generate_simulated_dataset(storage=storage, days=days, crash_days_count=crash_days)
+
+    console.print(Panel.fit(
+        f"[bold green]OK 가상 장애 시나리오 데이터 주입 완료![/bold green]\n"
+        f"- 생성된 장애 사건: {len(incidents)}건 (오전 09:00 전후 발생)\n"
+        f"- 원인: {RootCauseType.AP_HARDWARE_OR_CRASH.value} (유선 정상, 무선 게이트웨이 무응답)\n\n"
+        f"이제 아래 명령어로 패턴 분석 및 리포트를 테스트할 수 있습니다:\n"
+        f"  [cyan]wifi-sentinel report --pattern --days {days}[/cyan]\n"
+        f"  [cyan]wifi-sentinel status[/cyan]",
+        title="[시뮬레이터]",
+        border_style="green",
+    ))
 
 
 @app.command()

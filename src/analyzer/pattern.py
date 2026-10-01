@@ -115,6 +115,8 @@ class IncidentPatternAnalyzer:
             for inc in max_window_incidents
         )
         avg_minute = round(total_minutes_sum / len(max_window_incidents))
+        # 만약 08:50 ~ 09:10 사이에 걸쳐 있고 avg_minute이 535(08:55) 이상이면 반올림하여 목표 시각 산출
+        target_hour = round(avg_minute / 60) % 24
         center_h = (avg_minute // 60) % 24
         center_m = avg_minute % 60
         start_m = (best_center_minute - window_minutes) % 1440
@@ -135,14 +137,14 @@ class IncidentPatternAnalyzer:
         )
 
         rec_msg = (
-            f"매일 {center_h:02d}시 전후로 일정한 시간에 장애가 발생하는 패턴입니다. "
-            f"공유기(AP)의 '매일 {center_h:02d}시 자동 재부팅', '무선 절전/Wi-Fi On/Off 스케줄러', "
+            f"매일 {target_hour:02d}시 전후로 일정한 시간에 장애가 발생하는 패턴입니다. "
+            f"공유기(AP)의 '매일 {target_hour:02d}시 자동 재부팅', '무선 절전/Wi-Fi On/Off 스케줄러', "
             f"또는 주변 고출력 전자기기 가동 시간대를 확인하세요."
         )
 
         return RecurringPatternInsight(
             has_recurring_pattern=has_pattern,
-            target_hour=center_h,
+            target_hour=target_hour,
             time_window_str=window_str,
             incident_count_in_window=max_window_count,
             total_days_analyzed=total_days,
