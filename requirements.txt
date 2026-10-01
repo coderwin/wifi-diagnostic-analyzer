@@ -1,0 +1,26 @@
+# Core System & Networking
+psutil>=5.9.0
+ping3>=4.0.0
+dnspython>=2.6.0
+requests>=2.31.0
+pydantic>=2.7.0
+pydantic-settings>=2.2.0
+
+# Scheduling & CLI
+APScheduler>=3.10.4
+typer[all]>=0.12.0
+rich>=13.7.0
+
+# Database & Storage
+SQLAlchemy>=2.0.0
+aiosqlite>=0.20.0
+
+# Reporting & Visualization
+Jinja2>=3.1.3
+matplotlib>=3.8.0
+seaborn>=0.13.0
+weasyprint>=61.0
+
+# Testing & Dev
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
