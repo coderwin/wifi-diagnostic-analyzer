@@ -1,18 +1,25 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 
-from src.analyzer.pattern import IncidentPatternAnalyzer, RecurringPatternInsight
+from src.analyzer.pattern import IncidentPatternAnalyzer
 from src.config import settings
-from src.models.incident import Incident
 from src.reporter.charts import (
     generate_hourly_heatmap,
     generate_latency_trend_chart,
     generate_rssi_chart,
 )
-from src.storage.db import DatabaseStorage, MetricLogRecord
+from src.storage.db import DatabaseStorage
 from src.utils.logger import logger
+from src.utils.timezone import (
+    as_utc_naive,
+    issued_at_label,
+    local_day_bounds,
+    localize_incident,
+    report_timezone,
+    to_local,
+)
 
 try:
     from weasyprint import HTML
@@ -57,17 +64,18 @@ class PdfReportGenerator:
 
     def generate_daily_report(self, target_date: Optional[datetime.date] = None) -> Path:
         """일별 장애 및 네트워크 상태 요약 리포트 생성"""
+        tz = report_timezone()
         if not target_date:
-            target_date = datetime.now(timezone.utc).date()
+            target_date = datetime.now(tz).date()
 
-        start_dt = datetime.combine(target_date, datetime.min.time(), tzinfo=timezone.utc)
-        end_dt = datetime.combine(target_date, datetime.max.time(), tzinfo=timezone.utc)
+        start_dt, end_dt = local_day_bounds(target_date, tz)
 
         incidents = self.storage.get_incidents(start_time=start_dt, end_time=end_dt)
         snapshots = self.storage.get_snapshots(start_time=start_dt, end_time=end_dt, limit=1000)
+        local_incidents = [localize_incident(inc, tz) for inc in incidents]
 
-        # 차트 생성 데이터 추출
-        timestamps = [s.timestamp.strftime("%H:%M") for s in snapshots]
+        # 차트 생성 데이터 추출 (가로축은 리포트 시간대)
+        timestamps = [to_local(s.timestamp, tz).strftime("%H:%M") for s in snapshots]
         gw_pings = [s.gateway_ping_ms for s in snapshots]
         inet_pings = [s.internet_ping_ms for s in snapshots]
         rssi_vals = [s.rssi_dbm for s in snapshots]
@@ -79,25 +87,25 @@ class PdfReportGenerator:
         total_snaps = len(snapshots)
         down_snaps = sum(1 for s in snapshots if not s.wifi_connected or s.gateway_ping_ms is None)
         uptime_pct = round(((total_snaps - down_snaps) / total_snaps * 100), 2) if total_snaps > 0 else 100.0
-        total_downtime_sec = sum(inc.duration_seconds or 0 for inc in incidents)
+        total_downtime_sec = sum(inc.duration_seconds or 0 for inc in local_incidents)
 
-        primary_issue = incidents[0].root_cause.value if incidents else "정상 유지"
+        primary_issue = local_incidents[0].root_cause.value if local_incidents else "정상 유지"
 
         all_recommendations = []
-        for inc in incidents:
+        for inc in local_incidents:
             for rec in inc.recommendations:
                 if rec not in all_recommendations:
                     all_recommendations.append(rec)
 
         template = self.jinja_env.get_template("daily_report.html")
         html_out = template.render(
-            report_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            report_date=issued_at_label(tz),
             os_type="Windows & Linux",
             uptime_pct=uptime_pct,
-            total_incidents=len(incidents),
+            total_incidents=len(local_incidents),
             total_downtime_str=f"{int(total_downtime_sec)}초" if total_downtime_sec < 60 else f"{int(total_downtime_sec // 60)}분 {int(total_downtime_sec % 60)}초",
             primary_issue=primary_issue,
-            incidents=incidents,
+            incidents=local_incidents,
             recommendations=all_recommendations,
             latency_chart=latency_chart,
             rssi_chart=rssi_chart,
@@ -108,23 +116,29 @@ class PdfReportGenerator:
 
     def generate_pattern_report(self, days: int = 7) -> Path:
         """기간별(7일/30일) 반복 패턴 심층 분석 리포트 생성"""
-        now = datetime.now(timezone.utc)
-        start_dt = now - timedelta(days=days)
+        tz = report_timezone()
+        now_local = datetime.now(tz)
+        start_local = now_local - timedelta(days=days)
 
-        incidents = self.storage.get_incidents(start_time=start_dt, end_time=now, limit=500)
-        pattern_insight = IncidentPatternAnalyzer.analyze_patterns(incidents, window_minutes=15)
+        incidents = self.storage.get_incidents(
+            start_time=as_utc_naive(start_local),
+            end_time=as_utc_naive(now_local),
+            limit=500,
+        )
+        local_incidents = [localize_incident(inc, tz) for inc in incidents]
+        pattern_insight = IncidentPatternAnalyzer.analyze_patterns(local_incidents, window_minutes=15)
 
         heatmap_chart = generate_hourly_heatmap(pattern_insight.hourly_distribution)
 
         template = self.jinja_env.get_template("pattern_report.html")
         html_out = template.render(
-            period_str=f"{start_dt.strftime('%Y-%m-%d')} ~ {now.strftime('%Y-%m-%d')}",
+            period_str=f"{start_local.strftime('%Y-%m-%d')} ~ {now_local.strftime('%Y-%m-%d')}",
             total_days=days,
-            report_date=now.strftime("%Y-%m-%d %H:%M:%S"),
+            report_date=issued_at_label(tz),
             pattern_insight=pattern_insight,
-            pattern_incidents=incidents[:20],
+            pattern_incidents=local_incidents[:20],
             heatmap_chart=heatmap_chart,
         )
 
-        out_path = settings.REPORTS_DIR / f"pattern_analysis_{days}days_{now.strftime('%Y%m%d')}.pdf"
+        out_path = settings.REPORTS_DIR / f"pattern_analysis_{days}days_{now_local.strftime('%Y%m%d')}.pdf"
         return self._render_to_file(html_out, out_path)
