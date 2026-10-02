@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 import pytest
 
@@ -93,6 +93,18 @@ def test_daily_report_generation(populated_storage, tmp_path):
     assert out_file.exists()
     assert out_file.stat().st_size > 0
     print(f"\n[Generated Daily Report] {out_file} ({out_file.stat().st_size} bytes)")
+
+
+def test_daily_report_clock_follows_report_timezone(populated_storage, monkeypatch):
+    """DB의 09:00 UTC 장애는 Asia/Seoul 리포트에서 18:00으로 표시됩니다."""
+    monkeypatch.setenv("WIFI_TIMEZONE", "Asia/Seoul")
+    generator = PdfReportGenerator(db_storage=populated_storage)
+    out_file = generator.generate_daily_report(target_date=date(2026, 9, 30))
+
+    html_path = out_file if out_file.suffix == ".html" else out_file.with_suffix(".html")
+    html = html_path.read_text(encoding="utf-8")
+    assert "18:00:00" in html
+    assert "KST" in html
 
 
 def test_pattern_report_generation(populated_storage, tmp_path):
