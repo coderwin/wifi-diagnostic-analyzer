@@ -38,6 +38,7 @@ class MonitoringEngine:
         return snapshot
 
     async def _loop(self):
+        self.is_running = True
         logger.info(
             f"🚀 Wi-Fi Sentinel 모니터링 시작 (평상시: {settings.NORMAL_POLL_INTERVAL_SEC}초, "
             f"장애 시 고해상도: {settings.HIGH_RES_POLL_INTERVAL_SEC}초)"
